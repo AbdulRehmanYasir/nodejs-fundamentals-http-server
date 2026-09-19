@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Node.js Fundamentals Server</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; line-height: 1.5; }
+    code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
+    li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Node.js Fundamentals HTTP Server</h1>
+  <p>Built with the core <code>http</code>, <code>fs</code>, <code>events</code>, and <code>stream</code> modules only - no Express.</p>
+  <h2>Endpoints</h2>
+  <ul>
+    <li><code>GET /api/notes</code> - list all notes</li>
+    <li><code>POST /api/notes</code> - create a note (JSON body: <code>{ "title": "", "body": "" }</code>)</li>
+    <li><code>GET /api/notes/:id</code> - get one note</li>
+    <li><code>DELETE /api/notes/:id</code> - delete a note</li>
+    <li><code>GET /api/event-loop-demo</code> - triggers a callback ordering demo (watch the server console)</li>
+    <li><code>GET /api/download-log</code> - streams the access log file as a download</li>
+  </ul>
+</body>
+</html>

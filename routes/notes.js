@@ -1,0 +1,72 @@
+// routes/notes.js
+// Plain request handlers - no framework, just functions that take
+// (req, res) and use the fileStore for persistence.
+
+const { getAllNotes, getNoteById, createNote, deleteNote } = require('../utils/fileStore');
+
+function sendJson(res, statusCode, data) {
+  const body = JSON.stringify(data);
+  res.writeHead(statusCode, {
+    'Content-Type': 'application/json',
+    'Content-Length': Buffer.byteLength(body),
+  });
+  res.end(body);
+}
+
+function readRequestBody(req) {
+  // Manual body parsing: Node doesn't parse the body for you. The request
+  // object is a readable stream, so we collect its "data" chunks and
+  // resolve once "end" fires.
+  return new Promise((resolve, reject) => {
+    let raw = '';
+    req.on('data', (chunk) => {
+      raw += chunk;
+    });
+    req.on('end', () => {
+      if (!raw) return resolve({});
+      try {
+        resolve(JSON.parse(raw));
+      } catch (err) {
+        reject(err);
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
+async function handleGetAll(req, res) {
+  const notes = await getAllNotes();
+  sendJson(res, 200, notes);
+}
+
+async function handleGetOne(req, res, id) {
+  const note = await getNoteById(id);
+  if (!note) return sendJson(res, 404, { error: 'Note not found' });
+  sendJson(res, 200, note);
+}
+
+async function handleCreate(req, res) {
+  try {
+    const { title, body } = await readRequestBody(req);
+    if (!title || !body) {
+      return sendJson(res, 400, { error: 'title and body are required' });
+    }
+    const note = await createNote({ title, body });
+    sendJson(res, 201, note);
+  } catch (err) {
+    sendJson(res, 400, { error: 'Invalid JSON body' });
+  }
+}
+
+async function handleDelete(req, res, id) {
+  const deleted = await deleteNote(id);
+  if (!deleted) return sendJson(res, 404, { error: 'Note not found' });
+  sendJson(res, 204, null);
+}
+
+module.exports = {
+  handleGetAll,
+  handleGetOne,
+  handleCreate,
+  handleDelete,
+};

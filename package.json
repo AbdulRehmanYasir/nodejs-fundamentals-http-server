@@ -1,0 +1,14 @@
+{
+  "name": "node-fundamentals-http-server",
+  "version": "1.0.0",
+  "description": "A Node.js core fundamentals project: HTTP server, fs module, streams, and events - no Express.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node utils/seed.js"
+  },
+  "keywords": ["node", "http", "fs", "streams", "events", "fundamentals"],
+  "author": "Abdul Rehman Yasir",
+  "license": "MIT"
+}

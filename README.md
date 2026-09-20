@@ -126,3 +126,18 @@ and two independent listeners react to it: one prints to the console, the
 other appends a line to `data/access.log` via a write stream. Neither
 listener knows about the other — that decoupling is the reason
 `EventEmitter` exists.
+
+## Deployment Note
+
+This project uses `data/notes.json` as file-based storage to demonstrate
+Node.js `fs` operations.
+
+The application works with persistent file storage during local development.
+The Vercel deployment is intended for demonstrating the HTTP server and API
+routes; Vercel's serverless filesystem is not persistent application storage.
+
+For production deployments, a persistent database would be required.
+
+Access logs are written to `data/access.log` locally. On Vercel, request
+logging is sent to the platform console because the deployment filesystem
+is read-only.

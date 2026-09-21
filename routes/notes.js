@@ -17,33 +17,39 @@ function sendJson(res, statusCode, data) {
 
 function readRequestBody(req) {
   return new Promise((resolve, reject) => {
-
-    // Vercel may already parse the request body
-    if (req.body) {
-      if (typeof req.body === 'string') {
-        try {
-          return resolve(JSON.parse(req.body));
-        } catch (err) {
-          return reject(err);
-        }
-      }
-
-      return resolve(req.body);
-    }
-
-    // Normal Node.js HTTP stream parsing (local development)
     let raw = '';
 
+    // Handle already parsed body (some serverless environments)
+    if (req.body) {
+      if (typeof req.body === 'object') {
+        return resolve(req.body);
+      }
+
+      if (typeof req.body === 'string') {
+        raw = req.body;
+      }
+    }
+
+    // If body already exists as string
+    if (raw) {
+      try {
+        return resolve(JSON.parse(raw));
+      } catch (err) {
+        return reject(err);
+      }
+    }
+
+    // Normal Node.js HTTP stream parsing
     req.on('data', (chunk) => {
       raw += chunk.toString();
     });
 
     req.on('end', () => {
-      if (!raw) {
-        return resolve({});
-      }
-
       try {
+        if (!raw) {
+          return resolve({});
+        }
+
         resolve(JSON.parse(raw));
       } catch (err) {
         reject(err);
@@ -63,7 +69,9 @@ async function handleGetOne(req, res, id) {
   const note = await getNoteById(id);
 
   if (!note) {
-    return sendJson(res, 404, { error: 'Note not found' });
+    return sendJson(res, 404, {
+      error: 'Note not found',
+    });
   }
 
   sendJson(res, 200, note);
@@ -104,7 +112,8 @@ async function handleDelete(req, res, id) {
     });
   }
 
-  sendJson(res, 204, null);
+  res.writeHead(204);
+  res.end();
 }
 
 module.exports = {

@@ -2,7 +2,13 @@
 // Plain request handlers - no framework, just functions that take
 // (req, res) and use the fileStore for persistence.
 
-const { getAllNotes, getNoteById, createNote, deleteNote } = require('../utils/fileStore');
+const {
+  getAllNotes,
+  getNoteById,
+  createNote,
+  deleteNote,
+} = require('../utils/fileStore');
+
 
 function sendJson(res, statusCode, data) {
   const body = JSON.stringify(data);
@@ -15,106 +21,126 @@ function sendJson(res, statusCode, data) {
   res.end(body);
 }
 
+
 function readRequestBody(req) {
   return new Promise((resolve, reject) => {
-    let raw = '';
 
-    // Handle already parsed body (some serverless environments)
+    // Vercel body
     if (req.body) {
-      if (typeof req.body === 'object') {
-        return resolve(req.body);
-      }
-
-      if (typeof req.body === 'string') {
-        raw = req.body;
-      }
-    }
-
-    // If body already exists as string
-    if (raw) {
       try {
-        return resolve(JSON.parse(raw));
+        if (typeof req.body === "string") {
+          return resolve(JSON.parse(req.body));
+        }
+
+        return resolve(req.body);
+
       } catch (err) {
         return reject(err);
       }
     }
 
-    // Normal Node.js HTTP stream parsing
-    req.on('data', (chunk) => {
+
+    // Local Node.js HTTP stream
+    let raw = "";
+
+    req.on("data", (chunk) => {
       raw += chunk.toString();
     });
 
-    req.on('end', () => {
-      try {
-        if (!raw) {
-          return resolve({});
-        }
 
+    req.on("end", () => {
+      if (!raw) {
+        return resolve({});
+      }
+
+      try {
         resolve(JSON.parse(raw));
       } catch (err) {
         reject(err);
       }
     });
 
-    req.on('error', reject);
+
+    req.on("error", reject);
   });
 }
+
+
 
 async function handleGetAll(req, res) {
   const notes = await getAllNotes();
   sendJson(res, 200, notes);
 }
 
+
+
 async function handleGetOne(req, res, id) {
   const note = await getNoteById(id);
 
   if (!note) {
     return sendJson(res, 404, {
-      error: 'Note not found',
+      error: "Note not found",
     });
   }
 
   sendJson(res, 200, note);
 }
 
+
+
 async function handleCreate(req, res) {
   try {
+
     const { title, body } = await readRequestBody(req);
+
 
     if (!title || !body) {
       return sendJson(res, 400, {
-        error: 'title and body are required',
+        error: "title and body are required",
       });
     }
+
 
     const note = await createNote({
       title,
       body,
     });
 
+
     sendJson(res, 201, note);
 
+
   } catch (err) {
-    console.error('Create note error:', err);
+
+    console.error("Create note error:", err);
 
     sendJson(res, 400, {
-      error: 'Invalid JSON body',
+      error: "Invalid JSON body",
     });
+
   }
 }
 
+
+
 async function handleDelete(req, res, id) {
+
   const deleted = await deleteNote(id);
+
 
   if (!deleted) {
     return sendJson(res, 404, {
-      error: 'Note not found',
+      error: "Note not found",
     });
   }
 
+
   res.writeHead(204);
   res.end();
+
 }
+
+
 
 module.exports = {
   handleGetAll,

@@ -23,10 +23,39 @@ function sendJson(res, statusCode, data) {
 
 function readRequestBody(req) {
   return new Promise((resolve, reject) => {
+    // 1. Check if req.body was pre-parsed by the runtime/platform.
+    if (req.body !== undefined && req.body !== null) {
+      if (typeof req.body === 'object') {
+        return resolve(req.body);
+      }
+
+      if (typeof req.body === 'string') {
+        try {
+          return resolve(req.body ? JSON.parse(req.body) : {});
+        } catch (err) {
+          return reject(err);
+        }
+      }
+
+      if (Buffer.isBuffer(req.body)) {
+        try {
+          const str = req.body.toString('utf8');
+          return resolve(str ? JSON.parse(str) : {});
+        } catch (err) {
+          return reject(err);
+        }
+      }
+    }
+
+    // 2. Standard Node.js IncomingMessage stream parsing.
     let raw = '';
 
     req.on('data', (chunk) => {
-      raw += chunk.toString('utf8');
+      if (typeof chunk === 'string') {
+        raw += chunk;
+      } else if (Buffer.isBuffer(chunk)) {
+        raw += chunk.toString('utf8');
+      }
     });
 
     req.on('end', () => {
@@ -63,26 +92,38 @@ async function handleGetOne(req, res, id) {
 }
 
 async function handleCreate(req, res) {
+  let parsedBody;
   try {
-    const { title, body } = await readRequestBody(req);
+    parsedBody = await readRequestBody(req);
+  } catch (err) {
+    console.error('Body parse error:', err);
+    return sendJson(res, 400, {
+      error: 'Invalid JSON body',
+      details: err.message,
+    });
+  }
 
-    if (!title || !body) {
-      return sendJson(res, 400, {
-        error: 'title and body are required',
-      });
-    }
+  const { title, body } = parsedBody || {};
 
+  if (!title || !body) {
+    return sendJson(res, 400, {
+      error: 'title and body are required',
+    });
+  }
+
+  try {
     const note = await createNote({
       title,
       body,
     });
 
-    sendJson(res, 201, note);
+    return sendJson(res, 201, note);
   } catch (err) {
-    console.error('Create note error:', err);
+    console.error('Create note storage error:', err);
 
-    sendJson(res, 400, {
-      error: 'Invalid JSON body',
+    return sendJson(res, 500, {
+      error: 'Failed to create note',
+      details: err.message || 'Internal server error',
     });
   }
 }
@@ -106,3 +147,4 @@ module.exports = {
   handleCreate,
   handleDelete,
 };
+

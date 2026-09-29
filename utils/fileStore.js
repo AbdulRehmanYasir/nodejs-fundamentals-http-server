@@ -4,15 +4,28 @@
 
 const fs = require('fs/promises');
 const path = require('path');
+const os = require('os');
 
-const DATA_FILE = path.join(__dirname, '..', 'data', 'notes.json');
+const isVercel = Boolean(process.env.VERCEL);
+const DATA_FILE = isVercel
+  ? path.join(os.tmpdir(), 'notes.json')
+  : path.join(__dirname, '..', 'data', 'notes.json');
+const INITIAL_DATA_FILE = path.join(__dirname, '..', 'data', 'notes.json');
 
 async function ensureDataFile() {
   try {
     await fs.access(DATA_FILE);
   } catch {
-    // File doesn't exist yet - create it with an empty array.
-    await fs.writeFile(DATA_FILE, JSON.stringify([], null, 2));
+    // File doesn't exist in target location yet
+    let initialNotes = [];
+    try {
+      // On Vercel, try loading initial seed data from project's data/notes.json
+      const raw = await fs.readFile(INITIAL_DATA_FILE, 'utf-8');
+      initialNotes = JSON.parse(raw || '[]');
+    } catch {
+      initialNotes = [];
+    }
+    await fs.writeFile(DATA_FILE, JSON.stringify(initialNotes, null, 2));
   }
 }
 
@@ -23,6 +36,7 @@ async function readNotes() {
 }
 
 async function writeNotes(notes) {
+  await ensureDataFile();
   await fs.writeFile(DATA_FILE, JSON.stringify(notes, null, 2));
 }
 

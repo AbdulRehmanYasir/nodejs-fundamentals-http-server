@@ -130,12 +130,14 @@ const server = http.createServer(async (req, res) => {
     // --- streamed file download ---
     if (pathname === '/api/download-log' && method === 'GET') {
       const logPath = path.join(__dirname, 'data', 'access.log');
+      if (!fs.existsSync(logPath)) {
+        return sendJson(res, 404, { error: 'No log file yet - make a few requests first' });
+      }
       res.writeHead(200, {
         'Content-Type': 'text/plain',
         'Content-Disposition': 'attachment; filename="access.log"',
       });
       const stream = fs.createReadStream(logPath);
-      stream.on('error', () => sendJson(res, 404, { error: 'No log file yet - make a few requests first' }));
       return stream.pipe(res);
     }
 

@@ -1,143 +1,491 @@
-# Node.js Fundamentals HTTP Server
+<div align="center">
 
-A basic HTTP server built entirely on Node's core modules — no Express, no
-dependencies. Covers: the `http` module, `fs`, `events`, `stream`, and
-`npm`/`package.json` scripts.
+# 🚀 NODE.JS FUNDAMENTALS HTTP SERVER
 
-## Project structure
+### Core Node.js HTTP & REST API Project
 
+A Node.js HTTP server built from scratch using **Node.js core modules**, without Express or any web framework.
+
+The project demonstrates HTTP server creation, REST API development, JSON request handling, file operations, streams, events, the Node.js event loop, and deployment to Vercel.
+
+**Build. Understand. Debug. Deploy.**
+
+</div>
+
+---
+
+## 📌 About
+
+**Node.js Fundamentals HTTP Server** is a backend project built as part of my **Node.js Fundamentals learning track**.
+
+The project focuses on understanding Node.js at the core level by building an HTTP server using native Node.js modules instead of relying on frameworks such as Express.
+
+It provides a REST-style Notes API with CRUD operations, file-based data storage, request-body parsing, event-loop demonstrations, access logging, and streamed file downloads.
+
+The application was developed and tested locally and then deployed to **Vercel**.
+
+---
+
+## ✨ Features
+
+* 🚀 HTTP server built with Node.js `http` module
+* 📝 Notes REST API
+* ➕ Create notes
+* 📖 Read all notes
+* 🔎 Read a note by ID
+* 🗑️ Delete notes
+* 📦 JSON request & response handling
+* 📂 File-based data storage
+* 📄 Access logging
+* 🌊 Node.js streams
+* 🔄 Request-body stream handling
+* ⚡ Node.js event-loop demonstration
+* 🛡️ Error handling & validation
+* 🔧 Core Node.js modules
+* ☁️ Vercel deployment
+* 🧪 Local & production API testing
+
+---
+
+## 🔄 Application Flow
+
+```text
+HTTP Request
+      ↓
+Node.js HTTP Server
+      ↓
+URL & Method Routing
+      ↓
+Request Body Handling
+      ↓
+Route Handler
+      ↓
+File Storage
+      ↓
+JSON Response
+      ↓
+Client
 ```
-node-fundamentals-http-server/
-├── server.js           # http.createServer + routing
-├── routes/
-│   └── notes.js        # request handlers for /api/notes
-├── utils/
-│   ├── fileStore.js     # fs-based JSON "database"
-│   ├── logger.js         # EventEmitter-based request logger
-│   └── seed.js           # one-off fs write script (npm run seed)
-├── public/
-│   └── index.html        # served for GET /
+
+For a note creation request:
+
+```text
+POST /api/notes
+      ↓
+Parse JSON Body
+      ↓
+Validate title & body
+      ↓
+Create Note
+      ↓
+Write to JSON Storage
+      ↓
+Return 201 Created
+```
+
+---
+
+## 🏗 Project Structure
+
+```text
+nodejs-fundamentals-http-server/
+│
 ├── data/
-│   └── notes.json        # persisted notes (created/updated via fs)
-└── package.json
+│   ├── notes.json
+│   └── access.log
+│
+├── public/
+│   └── index.html
+│
+├── routes/
+│   └── notes.js
+│
+├── utils/
+│   ├── fileStore.js
+│   └── logger.js
+│
+├── server.js
+├── server.ts
+├── package.json
+├── package-lock.json
+└── README.md
 ```
 
-## Setup
+---
+
+## 🛠 Tech Stack
+
+| Technology           | Usage                       |
+| -------------------- | --------------------------- |
+| Node.js              | Backend runtime             |
+| `http`               | HTTP server                 |
+| `fs` / `fs/promises` | File operations             |
+| `path`               | File path handling          |
+| `url`                | URL parsing                 |
+| `events`             | Event-driven programming    |
+| `stream`             | Stream-based data handling  |
+| JSON                 | Data storage & API format   |
+| npm                  | Project & script management |
+| Vercel               | Deployment                  |
+
+No Express or backend framework is used.
+
+---
+
+## 📡 API
+
+### Notes
+
+| Method | Endpoint         | Description         |
+| ------ | ---------------- | ------------------- |
+| GET    | `/api/notes`     | Get all notes       |
+| POST   | `/api/notes`     | Create a new note   |
+| GET    | `/api/notes/:id` | Get a specific note |
+| DELETE | `/api/notes/:id` | Delete a note       |
+
+### Event Loop
+
+| Method | Endpoint               | Description                              |
+| ------ | ---------------------- | ---------------------------------------- |
+| GET    | `/api/event-loop-demo` | Demonstrates Node.js event-loop behavior |
+
+### Logs
+
+| Method | Endpoint            | Description                    |
+| ------ | ------------------- | ------------------------------ |
+| GET    | `/api/download-log` | Download the server access log |
+
+---
+
+## 📝 Create a Note
+
+Send a `POST` request to:
+
+```text
+/api/notes
+```
+
+with:
+
+```json
+{
+  "title": "My First Note",
+  "body": "Learning Node.js fundamentals"
+}
+```
+
+Successful requests return:
+
+```text
+201 Created
+```
+
+with the newly created note.
+
+---
+
+## 🧠 Node.js Event Loop
+
+The project includes an endpoint specifically designed to demonstrate how Node.js handles asynchronous operations.
+
+It explores the relationship between:
+
+```text
+JavaScript Execution
+        ↓
+Call Stack
+        ↓
+Asynchronous Operations
+        ↓
+Callbacks / Tasks
+        ↓
+Event Loop
+        ↓
+Call Stack
+```
+
+This helped me understand why asynchronous Node.js operations do not necessarily execute in the same order in which they are written.
+
+---
+
+## 📂 File System
+
+The project uses Node's filesystem APIs to manage application data.
+
+Local development uses:
+
+```text
+data/notes.json
+```
+
+for note storage.
+
+The application performs asynchronous operations for:
+
+* Reading notes
+* Creating notes
+* Updating notes
+* Deleting notes
+* Reading log files
+* Writing log data
+
+This provides practical experience with Node.js file I/O.
+
+---
+
+## 🌊 Streams
+
+Node.js streams are used for handling data incrementally.
+
+The project demonstrates streams through:
+
+* HTTP request-body handling
+* File downloading
+* Access-log processing
+
+Instead of always loading an entire file into memory, the application can stream file data directly through the HTTP response.
+
+---
+
+## 🛡️ Error Handling
+
+The API handles different types of errors separately.
+
+Examples include:
+
+```text
+400 Bad Request
+```
+
+for invalid JSON or missing required fields.
+
+```text
+404 Not Found
+```
+
+when a requested note does not exist.
+
+```text
+500 Internal Server Error
+```
+
+for unexpected server-side failures.
+
+The application also provides useful error information during development instead of incorrectly reporting every failure as an invalid JSON request.
+
+---
+
+## ☁️ Vercel Deployment
+
+The project is deployed as a Node.js application on Vercel.
+
+```text
+Client
+   ↓
+Vercel
+   ↓
+Node.js HTTP Server
+   ↓
+REST API
+   ↓
+File Storage
+```
+
+A deployment-specific storage layer was added because Vercel's deployed filesystem is not writable like a normal local filesystem.
+
+On Vercel, runtime note data is stored in temporary storage while the local development environment continues using:
+
+```text
+data/notes.json
+```
+
+---
+
+## 🐛 Deployment Challenge
+
+One of the main challenges was handling POST requests after deploying to Vercel.
+
+Initially, valid JSON requests were returning:
+
+```json
+{
+  "error": "Invalid JSON body"
+}
+```
+
+The issue was caused by differences between a normal Node.js HTTP request stream and the request body provided by the Vercel runtime.
+
+The request-body parser was updated to support both:
+
+```text
+Normal Node.js HTTP stream
+        +
+Pre-parsed request body
+```
+
+Error handling was also separated so JSON parsing errors, validation errors, and filesystem errors are handled independently.
+
+This was an important lesson in understanding the difference between local Node.js execution and serverless deployment environments.
+
+---
+
+## ⚙️ Run Locally
+
+Clone the repository:
 
 ```bash
-npm install    # no external deps, but this creates package-lock.json
-npm start      # node server.js
-# or, for auto-restart on save (Node 18.11+):
+git clone https://github.com/AbdulRehmanYasir/nodejs-fundamentals-http-server.git
+```
+
+Move into the project:
+
+```bash
+cd nodejs-fundamentals-http-server
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the server:
+
+```bash
+npm start
+```
+
+Development mode:
+
+```bash
 npm run dev
 ```
 
-Visit `http://localhost:3000/`.
+The server runs locally at:
 
-## API
-
-| Method | Path                    | Description                          |
-|--------|--------------------------|---------------------------------------|
-| GET    | `/api/notes`             | List all notes                        |
-| POST   | `/api/notes`             | Create a note — body: `{ "title", "body" }` |
-| GET    | `/api/notes/:id`         | Get one note                          |
-| DELETE | `/api/notes/:id`         | Delete a note                         |
-| GET    | `/api/event-loop-demo`   | Triggers callback-ordering demo (see server console) |
-| GET    | `/api/download-log`      | Streams `data/access.log` as a file download |
-
-Example:
-
-```bash
-curl -X POST http://localhost:3000/api/notes \
-  -H "Content-Type: application/json" \
-  -d '{"title":"First note","body":"Hello Node"}'
-
-curl http://localhost:3000/api/notes
+```text
+http://localhost:3000
 ```
 
-## npm scripts
+---
 
-- `npm start` — runs `node server.js`
-- `npm run dev` — runs the server with `--watch` so it restarts on file changes
-- `npm run seed` — overwrites `data/notes.json` with sample data via `fs.writeFileSync`
+## 🧪 Testing
 
-These live in `package.json` under `"scripts"`, which is npm's mechanism for
-naming shell commands so the whole team runs them the same way instead of
-memorizing raw `node` invocations.
+The application was tested both locally and on the deployed Vercel application.
 
-## Explaining the event loop
+### Local Tests
 
-Node.js runs JavaScript on a single thread, but I/O (file access, network
-requests, timers) doesn't block that thread — it's handed off to the
-system (via libuv's thread pool or OS-level async APIs), and the **event
-loop** is what checks in on that offloaded work and runs your callbacks
-once it's done.
+```text
+GET /api/notes          → 200 OK
+POST /api/notes         → 201 Created
+GET /api/notes/:id      → 200 OK
+DELETE /api/notes/:id   → 204 No Content
+GET /api/event-loop-demo → 200 OK
+GET /api/download-log   → 200 OK
+```
 
-Each pass of the event loop moves through a fixed set of phases:
+### Vercel Tests
 
-1. **Timers** — runs callbacks scheduled by `setTimeout`/`setInterval` whose
-   time has elapsed.
-2. **Pending callbacks** — some system-level callbacks deferred from the
-   previous cycle.
-3. **Poll** — retrieves new I/O events (e.g. `fs.readFile` completing) and
-   runs their callbacks; this is where the loop spends most of its time.
-4. **Check** — runs `setImmediate` callbacks.
-5. **Close callbacks** — e.g. `socket.on('close', ...)`.
+```text
+GET /api/notes           → 200 OK
+POST /api/notes          → 201 Created
+GET /api/notes/:id       → 200 OK
+DELETE /api/notes/:id    → 204 No Content
+GET /api/event-loop-demo → 200 OK
+```
 
-Two things run *between* every phase, not as a phase themselves:
+Malformed JSON requests are also handled with an appropriate:
 
-- **`process.nextTick` callbacks** — always run first, before anything else,
-  even before promises.
-- **Microtasks** (resolved Promises, `async`/`await` continuations) — run
-  right after `nextTick`, still before the loop moves to the next phase.
+```text
+400 Bad Request
+```
 
-So for the same tick, the rough order is: synchronous code → `nextTick`
-queue → microtask (Promise) queue → timers → poll (I/O) → check
-(`setImmediate`) → close callbacks → repeat.
+response.
 
-This is exactly what `GET /api/event-loop-demo` demonstrates: it logs
-synchronous code immediately, then queues a `nextTick`, a Promise
-microtask, a `setTimeout`, an `fs.readFile`, and a `setImmediate` — and the
-server console shows them resolving in that order, not the order they were
-written in.
+---
 
-**Why it matters in this project:** every route handler here is
-non-blocking. `fs/promises` in `fileStore.js` and `fs.createReadStream` in
-`server.js` never freeze the whole server while a file is being read —
-other incoming requests keep being accepted and handled concurrently on
-the same thread, because the actual disk I/O happens off-thread and the
-event loop just picks up the result when it's ready.
+## 🎯 Learning Goals
 
-## Streams
+The project was built around a simple progression:
 
-- **Static files and the log download** are served with
-  `fs.createReadStream(...).pipe(res)` instead of `fs.readFile` +
-  `res.end`. This keeps memory usage flat regardless of file size, since
-  only one chunk is buffered at a time.
-- **Incoming request bodies** are also streams — `readRequestBody` in
-  `routes/notes.js` listens for `data` and `end` events on `req` to
-  manually assemble the JSON body, which is what frameworks like Express
-  do for you under the hood via `body-parser`.
+```text
+Understand Node.js
+       ↓
+Build an HTTP Server
+       ↓
+Handle Requests
+       ↓
+Work With Files
+       ↓
+Understand Streams
+       ↓
+Learn the Event Loop
+       ↓
+Build a REST API
+       ↓
+Debug Real Problems
+       ↓
+Deploy to Vercel
+```
 
-## Events
+The main goal was to understand what happens underneath backend frameworks by building the HTTP server directly with Node.js core functionality.
 
-`utils/logger.js` defines a custom `EventEmitter`. `server.js` emits a
-single `"request"` event per request (once the response has finished),
-and two independent listeners react to it: one prints to the console, the
-other appends a line to `data/access.log` via a write stream. Neither
-listener knows about the other — that decoupling is the reason
-`EventEmitter` exists.
+---
 
-## Deployment Note
+## 📚 Key Learnings
 
-This project uses `data/notes.json` as file-based storage to demonstrate
-Node.js `fs` operations.
+Through this project, I gained practical experience with:
 
-The application works with persistent file storage during local development.
-The Vercel deployment is intended for demonstrating the HTTP server and API
-routes; Vercel's serverless filesystem is not persistent application storage.
+* Creating HTTP servers using the `http` module
+* Handling HTTP methods and routes
+* Working with request and response objects
+* Parsing JSON request bodies
+* Reading and writing files using `fs`
+* Understanding asynchronous file operations
+* Working with Node.js streams
+* Understanding the event loop
+* Using events and callbacks
+* Managing projects with npm and `package.json`
+* Handling server-side errors
+* Debugging production-specific issues
+* Deploying Node.js applications to Vercel
 
-For production deployments, a persistent database would be required.
+---
 
-Access logs are written to `data/access.log` locally. On Vercel, request
-logging is sent to the platform console because the deployment filesystem
-is read-only.
+## 🌐 Project Links
+
+**GitHub Repository**
+
+https://github.com/AbdulRehmanYasir/nodejs-fundamentals-http-server
+
+**Live API**
+
+https://nodejs-fundamentals-http-server-plum.vercel.app
+
+---
+
+## 👨‍💻 Author
+
+<div align="center">
+
+### Abdul Rehman Yasir
+
+**BS Artificial Intelligence Student | Developer**
+
+Building real-world software & AI projects.
+
+[GitHub](https://github.com/AbdulRehmanYasir)
+
+</div>
+
+---
+
+<div align="center">
+
+### 🚀 NODE.JS FUNDAMENTALS
+
+**Build. Understand. Debug. Deploy.**
+
+Built with Node.js Core Modules.
+
+</div>
